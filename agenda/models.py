@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from datetime import date
 
 class Setor(models.Model):
     nome = models.CharField(max_length=100, unique=True)
@@ -37,3 +38,16 @@ class Usuario(AbstractUser):
 
     def __str__(self):
         return f"{self.nome} ({self.get_role_display()})"
+
+class Reuniao(models.Model):
+    local = models.ForeignKey('Local', on_delete=models.CASCADE)
+    titulo = models.CharField(max_length=100)
+    data_inicio = models.DateField(default=date.today)
+    data_fim = models.DateField(default=date.today)
+    horario_inicio = models.TimeField()
+    horario_fim = models.TimeField()
+    colaboradores = models.ManyToManyField('Usuario', blank=True)
+    descricao = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.titulo} - {self.local.nome}"

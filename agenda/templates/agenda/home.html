@@ -7,5 +7,95 @@
 </head>
 <body>
     WE ARE CHAMPIONS MY FRIEND
+        <h2>Cadastro de Evento</h2>
+        
+        <!-- Formulário para cadastrar um evento -->
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Salvar Reunião</button>
+        </form>
+
+        <hr>
+
+        <h2>Reuniões Cadastradas</h2>
+
+        {% if reunioes %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Local</th>
+                        <th>Data Início</th>
+                        <th>Data Fim</th>
+                        <th>Horário ínicio</th>
+                        <th>Horário fim</th>
+                        <th>Colaboradores</th>
+                        <th>Descrição</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reuniao in reunioes %}
+                        <tr>
+                            <td>{{ reuniao.nome }}</td>
+                            <td>{{ reuniao.local.nome }}</td>
+                            <td>{{ reuniao.data_inicio|date:"d/m/Y" }}</td>
+                            <td>{{ reuniao.data_fim|date:"d/m/Y" }}</td>
+                            <td>{{ reuniao.horario_inicio|time:"H:i" }}</td>
+                            <td>{{ reuniao.horario_fim|time:"H:i" }}</td>
+                            <td>
+                                {% for colaborador in reuniao.colaboradores.all %}
+                                    {{ colaborador.nome }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>{{ reuniao.descricao }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Nenhum reuniao cadastrado.</p>
+        {% endif %}
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const dataInicioInput = document.getElementById("id_data_inicio");
+            const horarioInicioInput = document.getElementById("id_horario_inicio");
+            const horarioFimInput = document.getElementById("id_horario_fim");
+            const colaboradoresSelect = document.getElementById("id_colaboradores");
+        
+            function atualizarColaboradores() {
+                const data_inicio = dataInicioInput.value;
+                const horario_inicio = horarioInicioInput.value;
+                const horario_fim = horarioFimInput.value;
+        
+                if (data_inicio && horario_inicio && horario_fim) {
+                    fetch(`/colaboradores-disponiveis/?data_inicio=${data_inicio}&horario_inicio=${horario_inicio}&horario_fim=${horario_fim}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            colaboradoresSelect.innerHTML = "";
+                            
+                            if (data.colaboradores.length === 0) {
+                                const option = document.createElement("option");
+                                option.text = "Nenhum colaborador disponível";
+                                option.disabled = true;
+                                colaboradoresSelect.appendChild(option);
+                            } else {
+                                data.colaboradores.forEach(colaborador => {
+                                    const option = document.createElement("option");
+                                    option.value = colaborador.id;
+                                    option.text = colaborador.nome;
+                                    colaboradoresSelect.appendChild(option);
+                                });
+                            }
+                        });
+                }
+            }
+        
+            dataInicioInput.addEventListener("change", atualizarColaboradores);
+            horarioInicioInput.addEventListener("change", atualizarColaboradores);
+            horarioFimInput.addEventListener("change", atualizarColaboradores);
+        });
+        </script>
 </body>
 </html>
