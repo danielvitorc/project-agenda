@@ -61,6 +61,20 @@ def home(request):
 
     return render(request, "agenda/home.html", {"form": form, "reunioes": reunioes})
 
+
+def get_reunioes(request):
+    reunioes = Reuniao.objects.all()
+    eventos = []
+
+    for reuniao in reunioes:
+        eventos.append({
+            "title": reuniao.titulo,
+            "start": reuniao.data_inicio.strftime("%Y-%m-%d") + "T" + reuniao.horario_inicio.strftime("%H:%M:%S"),
+            "end": reuniao.data_fim.strftime("%Y-%m-%d") + "T" + reuniao.horario_fim.strftime("%H:%M:%S"),
+        })
+
+    return JsonResponse(eventos, safe=False)
+
 @login_required
 def colaboradores_disponiveis(request):
     data_inicio = request.GET.get("data_inicio")
@@ -101,5 +115,26 @@ def alterar_status_reuniao(request, reuniao_id, novo_status):
 
     return redirect('gerenciar_pedidos')
 
+@login_required
+def page_pedidos(request):
+    reunioes = Reuniao.objects.all()  # Busca todas as reuniões cadastradas
+    return render(request, "agenda/pedidos.html", {"reunioes": reunioes}) 
+
+def eventos_json(request):
+    reunioes = Reuniao.objects.all()
+    eventos = []
+    
+    for reuniao in reunioes:
+        eventos.append({
+            "id": reuniao.id,
+            "title": reuniao.titulo,
+            "start": reuniao.data_inicio.strftime("%Y-%m-%dT") + str(reuniao.horario_inicio),
+            "end": reuniao.data_fim.strftime("%Y-%m-%dT") + str(reuniao.horario_fim),
+            "descricao": reuniao.descricao,
+            "local": reuniao.local.nome,
+            "colaboradores": ", ".join([colab.nome for colab in reuniao.colaboradores.all()]),
+        })
+    
+    return JsonResponse(eventos, safe=False)
 
 
