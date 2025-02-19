@@ -48,7 +48,9 @@ class ReuniaoForm(forms.ModelForm):
 
         return cleaned_data
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, user=None, **kwargs ):
         super().__init__(*args, **kwargs)
         self.fields['data_inicio'].initial = date.today()
         self.fields['data_fim'].initial = date.today()
+        if user:  # Filtra os colaboradores, excluindo o usuário logado
+            self.fields['colaboradores'].queryset = Usuario.objects.filter(role='colaborador').exclude(id=user.id)

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <h2>Pedidos de Reunião</h2>
+
+    <table>
+        <tr>
+            <th>Título</th>
+            <th>Local</th>
+            <th>Data</th>
+            <th>Horário</th>
+            <th>Solicitante</th>
+            <th>Ações</th>
+        </tr>
+        {% for reuniao in pedidos %}
+        <tr>
+            <td>{{ reuniao.titulo }}</td>
+            <td>{{ reuniao.local.nome }}</td>
+            <td>{{ reuniao.data_inicio }}</td>
+            <td>{{ reuniao.horario_inicio }} - {{ reuniao.horario_fim }}</td>
+            <td>{{ reuniao.criado_por.nome }}</td>
+            <td>
+                <a href="{% url 'alterar_status_reuniao' reuniao.id 'aprovado' %}">✅ Aprovar</a> |
+                <a href="{% url 'alterar_status_reuniao' reuniao.id 'rejeitado' %}">❌ Rejeitar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">Nenhum pedido pendente.</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</body>
+</html>

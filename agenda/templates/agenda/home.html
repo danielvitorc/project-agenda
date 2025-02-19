@@ -6,57 +6,70 @@
     <title>Document</title>
 </head>
 <body>
-    WE ARE CHAMPIONS MY FRIEND
-        <h2>Cadastro de Evento</h2>
-        
-        <!-- Formulário para cadastrar um evento -->
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Salvar Reunião</button>
-        </form>
+    <h2>Pedido de Reunião</h2>
 
-        <hr>
-
-        <h2>Reuniões Cadastradas</h2>
-
-        {% if reunioes %}
-            <table class="table">
-                <thead>
+    <!-- Formulário para solicitar uma reunião -->
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Solicitar Reunião</button>
+    </form>
+    
+    <hr>
+    
+    <h2>Pedidos de Reunião</h2>
+    
+    {% if reunioes %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Solicitante</th>
+                    <th>Local</th>
+                    <th>Data Início</th>
+                    <th>Data Fim</th>
+                    <th>Horário Início</th>
+                    <th>Horário Fim</th>
+                    <th>Colaboradores</th>
+                    <th>Descrição</th>
+                    <th>Status</th>
+                    {% if user.is_staff %}  <!-- Se for um administrador, mostrar ações -->
+                        <th>Ações</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for reuniao in reunioes %}
                     <tr>
-                        <th>Nome</th>
-                        <th>Local</th>
-                        <th>Data Início</th>
-                        <th>Data Fim</th>
-                        <th>Horário ínicio</th>
-                        <th>Horário fim</th>
-                        <th>Colaboradores</th>
-                        <th>Descrição</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for reuniao in reunioes %}
-                        <tr>
-                            <td>{{ reuniao.nome }}</td>
-                            <td>{{ reuniao.local.nome }}</td>
-                            <td>{{ reuniao.data_inicio|date:"d/m/Y" }}</td>
-                            <td>{{ reuniao.data_fim|date:"d/m/Y" }}</td>
-                            <td>{{ reuniao.horario_inicio|time:"H:i" }}</td>
-                            <td>{{ reuniao.horario_fim|time:"H:i" }}</td>
+                        <td>{{ reuniao.criado_por.nome }}</td>  <!-- Mostra quem fez o pedido -->
+                        <td>{{ reuniao.local.nome }}</td>
+                        <td>{{ reuniao.data_inicio|date:"d/m/Y" }}</td>
+                        <td>{{ reuniao.data_fim|date:"d/m/Y" }}</td>
+                        <td>{{ reuniao.horario_inicio|time:"H:i" }}</td>
+                        <td>{{ reuniao.horario_fim|time:"H:i" }}</td>
+                        <td>
+                            {% for colaborador in reuniao.colaboradores.all %}
+                                {{ colaborador.nome }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>{{ reuniao.descricao }}</td>
+                        <td>
+                            <span class="badge {% if reuniao.status == 'APROVADO' %}bg-success{% elif reuniao.status == 'REJEITADO' %}bg-danger{% else %}bg-warning{% endif %}">
+                                {{ reuniao.status }}
+                            </span>
+                        </td>
+                        {% if user.is_staff %}
                             <td>
-                                {% for colaborador in reuniao.colaboradores.all %}
-                                    {{ colaborador.nome }}{% if not forloop.last %}, {% endif %}
-                                {% endfor %}
+                                <a href="{% url 'aprovar_reuniao' reuniao.id %}" class="btn btn-success btn-sm">Aprovar</a>
+                                <a href="{% url 'rejeitar_reuniao' reuniao.id %}" class="btn btn-danger btn-sm">Rejeitar</a>
                             </td>
-                            <td>{{ reuniao.descricao }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <p>Nenhum reuniao cadastrado.</p>
-        {% endif %}
-    </div>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhum pedido de reunião encontrado.</p>
+    {% endif %}
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const dataInicioInput = document.getElementById("id_data_inicio");
