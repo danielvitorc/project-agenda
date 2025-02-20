@@ -22,7 +22,7 @@ def login_view(request):
                 if user.role == "colaborador":
                     return redirect("home")
                 elif user.role == "lider":
-                    return redirect("gerenciar_pedidos")
+                    return redirect("home_lider")
             return redirect("home")  # Caso role não esteja definida
 
         else:
@@ -95,6 +95,15 @@ def colaboradores_disponiveis(request):
     return JsonResponse({"colaboradores": []})
 
 @login_required
+def home_lider(request):
+    if request.user.role != 'lider':  # Restringe acesso
+        return redirect('login')  
+    reunioes = Reuniao.objects.filter(Q(status='aprovado') | Q(criado_por=request.user))
+    
+    return render (request,"agenda/home_lider.html", {"reunioes": reunioes})
+
+
+@login_required
 def gerenciar_pedidos(request):
     if not hasattr(request.user, 'role') or request.user.role != 'lider':  
         return redirect('home')  # Redireciona para home se não for líder
@@ -132,7 +141,8 @@ def eventos_json(request):
             "end": reuniao.data_fim.strftime("%Y-%m-%dT") + str(reuniao.horario_fim),
             "descricao": reuniao.descricao,
             "local": reuniao.local.nome,
-            "colaboradores": ", ".join([colab.nome for colab in reuniao.colaboradores.all()]),
+            "colaboradores": ", ".join([f"{colab.username} - {colab.nome}" for colab in reuniao.colaboradores.all()]),
+            "status": reuniao.status.lower().strip()
         })
     
     return JsonResponse(eventos, safe=False)
