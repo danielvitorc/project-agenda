@@ -1,0 +1,17 @@
+#calendar {
+    max-width: 1030px;
+    margin: 50px auto;
+}
+.fc-event-title {
+    font-size: 12px !important; /* Ajuste conforme necessário */
+}
+.fc-daygrid-event {
+    font-size: 12px !important; /* Para eventos na visão mensal */
+}
+.sidebar a {
+    padding: 0.5rem 1rem;
+    display: flex;
+    transition: transform 0.3s ease;
+    font-size: 1.2rem;
+    text-decoration: none;
+}

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,25 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- FullCalendar CSS -->
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
-    <style>
-        #calendar {
-            max-width: 1030px;
-            margin: 50px auto;
-        }
-        .fc-event-title {
-            font-size: 12px !important; /* Ajuste conforme necessário */
-        }
-        .fc-daygrid-event {
-            font-size: 12px !important; /* Para eventos na visão mensal */
-        }
-        .sidebar a {
-            padding: 0.5rem 1rem;
-            display: flex;
-            transition: transform 0.3s ease;
-            font-size: 1.2rem;
-            text-decoration: none;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'agenda/css/style.css' %}">
 
 </head>
 <body>
@@ -47,7 +30,7 @@
 
         <!-- Conteúdo principal -->
         <div class="container" style="margin-left: 270px; padding-top: 20px;">
-            <h2>Pedidos de Reunião</h2>
+            <h2>Agenda</h2>
             <hr>
             <div id="calendar"></div>
         </div>
@@ -75,161 +58,8 @@
     <!-- Bootstrap e FullCalendar JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',  // Formato de agenda mensal
-                locale: 'pt-br',
-                events: '/api/reunioes/',  // URL da API que retorna as reuniões
-                eventColor: '#007bff'  // Cor azul para os eventos
-            });
-            calendar.render();
-        });
-    </script>
-    
-    
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const dataInicioInput = document.getElementById("id_data_inicio");
-            const horarioInicioInput = document.getElementById("id_horario_inicio");
-            const horarioFimInput = document.getElementById("id_horario_fim");
-            const colaboradoresSelect = document.getElementById("id_colaboradores");
-        
-            function atualizarColaboradores() {
-                const data_inicio = dataInicioInput.value;
-                const horario_inicio = horarioInicioInput.value;
-                const horario_fim = horarioFimInput.value;
-        
-                if (data_inicio && horario_inicio && horario_fim) {
-                    fetch(`/colaboradores-disponiveis/?data_inicio=${data_inicio}&horario_inicio=${horario_inicio}&horario_fim=${horario_fim}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            colaboradoresSelect.innerHTML = "";
-                            
-                            if (data.colaboradores.length === 0) {
-                                const option = document.createElement("option");
-                                option.text = "Nenhum colaborador disponível";
-                                option.disabled = true;
-                                colaboradoresSelect.appendChild(option);
-                            } else {
-                                data.colaboradores.forEach(colaborador => {
-                                    const option = document.createElement("option");
-                                    option.value = colaborador.id;
-                                    option.text = colaborador.nome;
-                                    colaboradoresSelect.appendChild(option);
-                                });
-                            }
-                        });
-                }
-            }
-        
-            dataInicioInput.addEventListener("change", atualizarColaboradores);
-            horarioInicioInput.addEventListener("change", atualizarColaboradores);
-            horarioFimInput.addEventListener("change", atualizarColaboradores);
-        });
-        </script>
-        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.min.js"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                var calendarEl = document.getElementById('calendar');
-                var calendar = new FullCalendar.Calendar(calendarEl, {
-                    initialView: 'dayGridMonth',
-                    locale: 'pt-br',
-                    headerToolbar: {
-                        left: 'prev,next today',
-                        center: 'title',
-                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                    },
-                    slotMinTime: "07:00:00",
-                    slotMaxTime: "20:00:00",
-                    events: function(fetchInfo, successCallback, failureCallback) {
-                        fetch('/eventos_json/') // Rota que retorna eventos
-                            .then(response => response.json())
-                            .then(data => {
-                                let eventos = data.map(evento => ({
-                                    title: evento.title,
-                                    start: evento.start,
-                                    end: evento.end,
-                                    status: evento.status,
-                                    extendedProps: evento.extendedProps,
-                                    backgroundColor: evento.status === "aprovado" ? "#007bff" : evento.status === "pendente" ? "#f39c12" : "#28a745", // Azul para aprovado, laranja para pendente, verde para outros
-                                    borderColor: evento.status === "aprovado" ? "#007bff" : evento.status === "pendente" ? "#f39c12" : "#28a745"
-                                }));
-                                successCallback(eventos);
-                            })
-                            .catch(error => {
-                                console.error("Erro ao buscar eventos:", error);
-                                failureCallback(error);
-                            });
-                    },
-                    eventClick: function(info) {
-                        document.getElementById('modalReuniaoLabel').textContent = info.event.title;
-                        document.getElementById('modalLocal').textContent = info.event.extendedProps.local;
-                        document.getElementById('modalData').textContent = info.event.start.toLocaleDateString('pt-BR');
-                        document.getElementById('modalHorario').textContent = info.event.start.toLocaleTimeString('pt-BR') + " - " + info.event.end.toLocaleTimeString('pt-BR');
-                        document.getElementById('modalDescricao').textContent = info.event.extendedProps.descricao;
-                        document.getElementById('modalColaboradores').textContent = info.event.extendedProps.colaboradores;
-
-                        var modal = new bootstrap.Modal(document.getElementById('modalReuniao'));
-                        modal.show();
-                    }
-                });
-                calendar.render();
-            });
-
-        </script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                var calendarEl = document.getElementById('calendar');
-                var statusFilter = document.getElementById('statusFilter');
-
-                var calendar = new FullCalendar.Calendar(calendarEl, {
-                    initialView: 'dayGridMonth',
-                    locale: 'pt-br',
-                    headerToolbar: {
-                        left: 'prev,next today',
-                        center: 'title',
-                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                    },
-                    slotMinTime: "07:00:00",
-                    slotMaxTime: "20:00:00",
-                    events: function(fetchInfo, successCallback, failureCallback) {
-                        fetch('/eventos_json/') // Sua API de eventos
-                            .then(response => response.json())
-                            .then(data => {
-                                let selectedStatus = statusFilter.value;
-                                let eventos = data
-                                    .filter(evento => selectedStatus === "todos" || evento.status === selectedStatus) // Filtra eventos
-                                    .map(evento => ({
-                                        title: evento.title,
-                                        start: evento.start,
-                                        end: evento.end,
-                                        status: evento.status,
-                                        extendedProps: evento.extendedProps,
-                                        backgroundColor: evento.status === "aprovado" ? "#007bff" : evento.status === "pendente" ? "#f39c12" : "#28a745",
-                                        borderColor: evento.status === "aprovado" ? "#007bff" : evento.status === "pendente" ? "#f39c12" : "#28a745"
-                                    }));
-                                successCallback(eventos);
-                            })
-                            .catch(error => {
-                                console.error("Erro ao buscar eventos:", error);
-                                failureCallback(error);
-                            });
-                    }
-                });
-
-                calendar.render();
-
-                // Atualizar o calendário quando o filtro mudar
-                statusFilter.addEventListener("change", function() {
-                    calendar.refetchEvents();
-                });
-            });
-        </script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.min.js"></script>
+    <script src="{% static 'agenda/js/calendar.js' %}"></script>
+    <script src="{% static 'agenda/js/colaboradores.js' %}"></script>
 </body>
 </html>

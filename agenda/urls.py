@@ -1,17 +1,17 @@
 from django.urls import path
-from .views import login_view, logout_view, home, colaboradores_disponiveis, gerenciar_pedidos, alterar_status_reuniao, get_reunioes, page_pedidos, eventos_json, home_lider
+from .views import auth, api, colaborador, lider
 
 
 urlpatterns = [
-    path("", login_view, name="login"),
-    path("logout/", logout_view, name="logout"),
-    path("home/", home, name="home"),
-    path('api/reunioes/', get_reunioes, name='api_reunioes'),  # Endpoint da API
-    path("colaboradores-disponiveis/", colaboradores_disponiveis, name="colaboradores_disponiveis"),
-    path("pedidos/", gerenciar_pedidos, name="gerenciar_pedidos"),
-    path("alterar-status/<int:reuniao_id>/<str:novo_status>/",alterar_status_reuniao, name="alterar_status_reuniao"),
-    path("page_pedidos/", page_pedidos, name="page_pedidos"),
-    path("eventos_json/", eventos_json, name="eventos_json"),
-    path("home_lider/", home_lider, name="home_lider")
+    path("", auth.login_view, name="login"),
+    path("logout/", auth.logout_view, name="logout"),
+    path("home/", colaborador.home, name="home"),
+    path('api/reunioes/', api.get_reunioes, name='api_reunioes'),  # Endpoint da API
+    path("colaboradores-disponiveis/", api.colaboradores_disponiveis, name="colaboradores_disponiveis"),
+    path("pedidos/", lider.gerenciar_pedidos, name="gerenciar_pedidos"),
+    path("alterar-status/<int:reuniao_id>/<str:novo_status>/", lider.alterar_status_reuniao, name="alterar_status_reuniao"),
+    path("page_pedidos/", colaborador.page_pedidos, name="page_pedidos"),
+    path("eventos_json/", api.eventos_json, name="eventos_json"),
+    path("home_lider/", lider.home_lider, name="home_lider")
     
 ]

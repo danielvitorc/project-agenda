@@ -36,10 +36,8 @@
                     <tr>
                         <th>Solicitante</th>
                         <th>Local</th>
-                        <th>Data Início</th>
-                        <th>Data Fim</th>
-                        <th>Horário Início</th>
-                        <th>Horário Fim</th>
+                        <th>Data</th>
+                        <th>Horário</th>
                         <th>Colaboradores</th>
                         <th>Descrição</th>
                         <th>Status</th>
@@ -54,9 +52,7 @@
                             <td>{{ reuniao.criado_por.nome }}</td>  <!-- Mostra quem fez o pedido -->
                             <td>{{ reuniao.local.nome }}</td>
                             <td>{{ reuniao.data_inicio|date:"d/m/Y" }}</td>
-                            <td>{{ reuniao.data_fim|date:"d/m/Y" }}</td>
-                            <td>{{ reuniao.horario_inicio|time:"H:i" }}</td>
-                            <td>{{ reuniao.horario_fim|time:"H:i" }}</td>
+                            <td>{{ reuniao.horario_inicio|time:"H:i" }} - {{ reuniao.horario_fim|time:"H:i" }}</td>
                             <td>
                                 {% for colaborador in reuniao.colaboradores.all %}
                                     {{ colaborador.nome }}{% if not forloop.last %}, {% endif %}
@@ -83,5 +79,6 @@
         {% endif %}
             </div>
         </div>
+
 </body>
 </html>
