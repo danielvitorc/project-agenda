@@ -6,7 +6,8 @@ from .models import Reuniao, Local, Usuario
 class ReuniaoForm(forms.ModelForm):
     local = forms.ModelChoiceField(
         queryset=Local.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control'})
+        empty_label="Selecione o Local da Reunião",
+        widget=forms.Select(attrs={'class': 'form-control input-cinza'})
     )
     colaboradores = forms.ModelMultipleChoiceField(
         queryset=Usuario.objects.filter(role='colaborador'),
@@ -21,11 +22,11 @@ class ReuniaoForm(forms.ModelForm):
         model = Reuniao
         fields = ['local', 'titulo', 'data_inicio', 'horario_inicio', 'horario_fim', 'colaboradores', 'descricao']
         widgets = {
-            'titulo': forms.TextInput(attrs={'class': 'form-control'}),
-            'data_inicio': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-            'horario_inicio': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
-            'horario_fim': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
-            'descricao': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'titulo': forms.TextInput(attrs={'class': 'form-control input-cinza '}),
+            'data_inicio': forms.DateInput(attrs={'type': 'date', 'class': 'form-control input-cinza'}),
+            'horario_inicio': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control input-cinza'}),
+            'horario_fim': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control input-cinza'}),
+            'descricao': forms.Textarea(attrs={'class': 'form-control input-cinza', 'rows': 3}),
         }
         
     def clean(self):

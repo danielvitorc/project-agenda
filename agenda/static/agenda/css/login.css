@@ -1,0 +1,60 @@
+body{
+    background: linear-gradient(90deg, rgba(224,224,224,1) 0%, rgba(223,223,223,1) 35%, rgba(210,210,210,1) 100% );
+}
+/* Estilo para o container principal (login e registro) */
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    background: linear-gradient(135deg, #00122a, #003d73);
+    border-radius: 10px;
+
+}
+
+/* Título centralizado */
+.login-container h2{
+    color: #ffc107;
+    font-size: 17px;
+    margin-top: 5px;
+}
+.login-container label{
+    color: #ffc107;
+}
+
+/* Estilo dos campos de entrada */
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 5px;
+    background: #fff;
+    color: #333;
+}
+
+/* Botão de submit */
+button[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    background: linear-gradient(135deg, #ffc107, #ff9800);
+    color: rgb(0, 0, 0);
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: transform 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    transform: scale(1.05);
+}
+
+/* Estilo para mensagens de erro */
+.error {
+    color: #ff4d4d;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+    
