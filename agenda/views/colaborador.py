@@ -33,7 +33,7 @@ def home(request):
             messages.success(request, "Pedido de reunião enviado para aprovação!")
             return redirect('home')
     else:
-        form = ReuniaoForm()
+        form = ReuniaoForm(user=request.user)
 
     return render(request, "agenda/home.html", {"form": form, "reunioes": reunioes})
 

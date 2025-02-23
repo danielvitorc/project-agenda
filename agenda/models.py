@@ -50,7 +50,6 @@ class Reuniao(models.Model):
     local = models.ForeignKey('Local', on_delete=models.CASCADE)
     titulo = models.CharField(max_length=100)
     data_inicio = models.DateField(default=date.today)
-    data_fim = models.DateField(default=date.today)
     horario_inicio = models.TimeField()
     horario_fim = models.TimeField()
     colaboradores = models.ManyToManyField('Usuario', blank=True)
