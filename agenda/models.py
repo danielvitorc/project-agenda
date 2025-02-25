@@ -56,6 +56,7 @@ class Reuniao(models.Model):
     descricao = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pendente') 
     criado_por = models.ForeignKey('Usuario', on_delete=models.CASCADE, related_name='reunioes_solicitadas')
+    motivo_rejeicao = models.TextField(blank=True, null=True)  
 
     def __str__(self):
         return f"{self.titulo} - {self.local.nome} ({self.get_status_display()})"

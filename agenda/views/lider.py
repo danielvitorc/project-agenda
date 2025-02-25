@@ -36,15 +36,24 @@ def gerenciar_pedidos(request):
 #View que permite autorizar/recusar pedidos de reunião (Exclusivo lider)
 @login_required
 def alterar_status_reuniao(request, reuniao_id, novo_status):
-    # Verifica se o tipo de usuario é 'lider'. Caso não, é redirecionado para o gerenciar pedidos
     if request.user.role != 'lider':
         return redirect('gerenciar_pedidos')
 
-    # Pega o id do Registro
     reuniao = get_object_or_404(Reuniao, id=reuniao_id)
-    # Cadastra o novo status e salva no banco
-    if novo_status in ['aprovado', 'rejeitado']:
+
+    if request.method == 'POST':
+        motivo_rejeicao = request.POST.get('motivo_rejeicao', '').strip()
+        
+        if novo_status == 'rejeitado' and not motivo_rejeicao:
+            messages.error(request, "Por favor, forneça um motivo para a rejeição.")
+            return redirect('gerenciar_pedidos')
+
         reuniao.status = novo_status
+        if novo_status == 'rejeitado':
+            reuniao.motivo_rejeicao = motivo_rejeicao
+        else:
+            reuniao.motivo_rejeicao = None
+
         reuniao.save()
         messages.success(request, f"Reunião {reuniao.titulo} foi {novo_status}!")
 

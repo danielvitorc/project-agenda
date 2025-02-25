@@ -57,6 +57,8 @@ def eventos_json(request):
     ]
     return JsonResponse(eventos, safe=False)
 
+# View que nao permite marcar uma reunião para o mesmo local, no mesmo dia e intervalo de horario para uma ja cadastrada
+
 @csrf_exempt
 def verificar_conflito(request):
     if request.method == "POST":
