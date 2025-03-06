@@ -135,3 +135,10 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'sistema.agendamento.nortetech@gmail.com'  
 EMAIL_HOST_PASSWORD = 'rudm bkng dlxt sbqg'  
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+ALLOWED_HOSTS = [
+    '192.168.9.202',  # IP da máquina
+    'localhost',       
+    '127.0.0.1'
+]
