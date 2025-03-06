@@ -34,7 +34,8 @@ def colaboradores_disponiveis(request):
             Q(horario_inicio__lt=horario_fim) & Q(horario_fim__gt=horario_inicio)
         ).values_list('colaboradores', flat=True)
 
-        colaboradores_disponiveis = Usuario.objects.filter(role='colaborador').exclude(id__in=colaboradores_ocupados)
+        colaboradores_disponiveis = Usuario.objects.filter(Q(role='colaborador') | Q(role='lider')
+        ).exclude(id__in=colaboradores_ocupados)
         # Retorne id, nome, username e setor
         return JsonResponse({"colaboradores": list(colaboradores_disponiveis.values("id", "nome", "username", "setor__nome"))})
 

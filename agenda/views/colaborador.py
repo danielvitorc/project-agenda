@@ -56,6 +56,7 @@ def home(request):
 
     return render(request, "agenda/home.html", {"form": form, "reunioes": reunioes})
 
+
 #View para carregar as funções da pagina pedidos (colaborador)
 @login_required
 def page_pedidos(request):

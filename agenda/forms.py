@@ -10,10 +10,10 @@ class ReuniaoForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': 'form-control input-cinza'})
     )
     colaboradores = forms.ModelMultipleChoiceField(
-        queryset=Usuario.objects.filter(role='colaborador'),
+        queryset=Usuario.objects.filter(Q(role='colaborador') | Q(role='lider')),
         widget=forms.SelectMultiple(attrs={
             'class': 'form-control',
-            'id': 'id_colaboradores'
+            'id': 'id_colaboradores',
         }),
         required=False
     )
@@ -51,7 +51,7 @@ class ReuniaoForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['data_inicio'].initial = date.today()
         if user and user.is_authenticated:
-            self.fields['colaboradores'].queryset = Usuario.objects.filter(role='colaborador').exclude(id=user.id)
+            self.fields['colaboradores'].queryset = Usuario.objects.filter(Q(role='colaborador') | Q(role='lider')).exclude(id=user.id)
         self.fields['colaboradores'].widget.attrs['id'] = 'id_colaboradores'
         self.fields['colaboradores'].label_from_instance = lambda obj: f"{obj.username} - {obj.nome} - {obj.setor}"
 
