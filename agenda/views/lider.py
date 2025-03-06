@@ -2,6 +2,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.mail import send_mail
 from django.db.models import Q
 from ..models import Reuniao
 from ..forms import ReuniaoForm
@@ -72,6 +73,22 @@ def alterar_status_reuniao(request, reuniao_id, novo_status):
             reuniao.motivo_rejeicao = None
 
         reuniao.save()
-        messages.success(request, f"Reunião {reuniao.titulo} foi {novo_status}!")
+        # Enviar e-mail apenas ao colaborador que criou a reunião
+        colaborador = reuniao.criado_por
 
-    return redirect('gerenciar_pedidos')
+        if colaborador.email:
+            status_msg = "aprovada" if novo_status == "aprovado" else "rejeitada"
+            motivo = f"\nMotivo: {motivo_rejeicao}" if novo_status == "rejeitado" else ""
+
+            send_mail(
+                'Atualização da sua Solicitação de Reunião',
+                f'Olá {colaborador.nome},\n\n'
+                f'Sua solicitação de reunião "{reuniao.titulo}" foi {status_msg}.{motivo}\n\n'
+                'Acesse o sistema para mais detalhes.',
+                'sistema.agendamento.nortetech@gmail.com',
+                [colaborador.email],
+                fail_silently=False,
+            )
+
+        messages.success(request, f"Reunião {reuniao.titulo} foi {novo_status}!")
+        return redirect('gerenciar_pedidos')

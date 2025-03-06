@@ -2,6 +2,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.mail import send_mail
+from django.contrib.auth import get_user_model
 from django.db.models import Q
 from ..models import Reuniao
 from ..forms import ReuniaoForm
@@ -29,6 +31,23 @@ def home(request):
             # Retorna colaboradores a partir da logica do forms
             reuniao.colaboradores.set(form.cleaned_data['colaboradores'])
             reuniao.colaboradores.add(request.user)
+
+            User = get_user_model()
+            lideres = User.objects.filter(role='lider')
+
+            # Lista de e-mails dos líderes
+            emails_lideres = [lider.email for lider in lideres if lider.email]
+
+            if emails_lideres:
+                send_mail(
+                    'Nova Solicitação de Reunião',
+                    f'O colaborador {request.user.nome} solicitou uma reunião.\n'
+                    f'Título: {reuniao.titulo}\nData: {reuniao.data_inicio}\n\n'
+                    'Acesse o painel para aprovar ou rejeitar.',
+                    'sistema.agendamento.nortetech@gmail.com',
+                    emails_lideres,
+                    fail_silently=False,
+                )
 
             messages.success(request, "Pedido de reunião enviado para aprovação!")
             return redirect('home')
