@@ -74,19 +74,19 @@ def alterar_status_reuniao(request, reuniao_id, novo_status):
 
         reuniao.save()
         # Enviar e-mail apenas ao colaborador que criou a reunião
-        colaborador = reuniao.criado_por
+        emails_colaboradores = reuniao.colaboradores.values_list('email', flat=True).exclude(email__isnull=True)
 
-        if colaborador.email:
+        if emails_colaboradores:
             status_msg = "aprovada" if novo_status == "aprovado" else "rejeitada"
             motivo = f"\nMotivo: {motivo_rejeicao}" if novo_status == "rejeitado" else ""
 
             send_mail(
-                'Atualização da sua Solicitação de Reunião',
-                f'Olá {colaborador.nome},\n\n'
+                'Atualização da Solicitação de Reunião',
+                f'Olá,\n\n'
                 f'Sua solicitação de reunião "{reuniao.titulo}" foi {status_msg}.{motivo}\n\n'
                 'Acesse o sistema para mais detalhes.',
                 'sistema.agendamento.nortetech@gmail.com',
-                [colaborador.email],
+                emails_colaboradores,
                 fail_silently=False,
             )
 
