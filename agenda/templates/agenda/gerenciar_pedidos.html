@@ -73,6 +73,12 @@
                         onclick="abrirModalDetalhes(this)">
                         📋 Detalhes
                     </button>
+                    {% if reuniao.status == 'cancelamento_solicitado' %}
+                        <form action="{% url 'alterar_status_reuniao' reuniao.id 'cancelado' %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-warning btn-sm mt-1">✔️ Aprovar Cancelamento</button>
+                        </form>
+                    {% endif %}
                 </td>
             </tr>
             {% empty %}
@@ -104,6 +110,10 @@
                         <span class="badge bg-success">✅ Aprovado</span>
                     {% elif reuniao.status == 'rejeitado' %}
                         <span class="badge bg-danger">❌ Negado</span>
+                    {% elif reuniao.status == 'cancelado' %}
+                        <span class="badge bg-dark">🚫 Cancelado</span>
+                    {% elif reuniao.status == 'cancelamento_solicitado' %}
+                        <span class="badge bg-warning text-dark">🕓 Cancelamento Solicitado</span>
                     {% else %}
                         <span class="badge bg-secondary">🔄 Pendente</span>
                     {% endif %}

@@ -12,6 +12,8 @@ urlpatterns = [
     path("pedidos/", lider.gerenciar_pedidos, name="gerenciar_pedidos"),
     path("alterar-status/<int:reuniao_id>/<str:novo_status>/", lider.alterar_status_reuniao, name="alterar_status_reuniao"),
     path("page_pedidos/", colaborador.page_pedidos, name="page_pedidos"),
+    path('reuniao/<int:reuniao_id>/cancelar/', colaborador.solicitar_cancelamento_reuniao, name='solicitar_cancelamento_reuniao'),
+    path('reuniao/<int:reuniao_id>/aprovar-cancelamento/', lider.aprovar_cancelamento, name='aprovar_cancelamento'),
     path("eventos_json/", api.eventos_json, name="eventos_json"),
     path("home_lider/", lider.home_lider, name="home_lider"),
     

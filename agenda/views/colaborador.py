@@ -1,5 +1,5 @@
 # Módulo de açoes dos usuarios do tipo 'colaborador'
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.mail import send_mail
@@ -68,3 +68,25 @@ def page_pedidos(request):
     ).distinct().order_by('-data_inicio', '-horario_inicio')
 
     return render(request, "agenda/pedidos.html", {"reunioes": reunioes})
+
+
+@login_required
+def solicitar_cancelamento_reuniao(request, reuniao_id):
+    reuniao = get_object_or_404(Reuniao, id=reuniao_id)
+
+    # Verifica se o usuário está relacionado com a reunião
+    if request.user != reuniao.criado_por and request.user not in reuniao.colaboradores.all():
+        messages.error(request, "Você não tem permissão para cancelar essa reunião.")
+        return redirect('page_pedidos')
+
+    if reuniao.status == 'pendente':
+        reuniao.status = 'cancelado'
+        messages.success(request, "Reunião cancelada com sucesso.")
+    elif reuniao.status == 'aprovado':
+        reuniao.status = 'cancelamento_solicitado'
+        messages.info(request, "Solicitação de cancelamento enviada ao líder.")
+    else:
+        messages.warning(request, "A reunião não pode ser cancelada neste status.")
+    
+    reuniao.save()
+    return redirect('page_pedidos')

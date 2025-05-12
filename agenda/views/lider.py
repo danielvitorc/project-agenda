@@ -92,3 +92,12 @@ def alterar_status_reuniao(request, reuniao_id, novo_status):
 
         messages.success(request, f"Reunião {reuniao.titulo} foi {novo_status}!")
         return redirect('gerenciar_pedidos')
+    
+@login_required
+def aprovar_cancelamento(request, reuniao_id):
+    reuniao = get_object_or_404(Reuniao, id=reuniao_id)
+    if request.user.is_staff and reuniao.status == 'cancelamento_solicitado':
+        reuniao.status = 'cancelado'
+        reuniao.save()
+        messages.success(request, 'Reunião cancelada com sucesso.')
+    return redirect('page_pedidos')

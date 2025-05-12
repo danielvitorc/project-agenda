@@ -46,6 +46,8 @@ class Reuniao(models.Model):
         ('pendente','Pendente'),
         ('aprovado','Aprovado'),
         ('rejeitado','Rejeitado'),
+        ('cancelamento_solicitado', 'Cancelamento Solicitado'),
+        ('cancelado','Cancelado'),
     ]
     local = models.ForeignKey('Local', on_delete=models.CASCADE)
     titulo = models.CharField(max_length=100)
@@ -54,7 +56,7 @@ class Reuniao(models.Model):
     horario_fim = models.TimeField()
     colaboradores = models.ManyToManyField('Usuario', blank=True)
     descricao = models.TextField(blank=True, null=True)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pendente') 
+    status = models.CharField(max_length=25, choices=STATUS_CHOICES, default='pendente') 
     criado_por = models.ForeignKey('Usuario', on_delete=models.CASCADE, related_name='reunioes_solicitadas')
     motivo_rejeicao = models.TextField(blank=True, null=True)  
 

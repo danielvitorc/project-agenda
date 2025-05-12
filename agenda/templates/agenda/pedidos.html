@@ -40,6 +40,7 @@
                         {% if user.is_staff %}  <!-- Se for um administrador, mostrar ações -->
                             <th>Ações</th>
                         {% endif %}
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -58,17 +59,29 @@
                             <td style="height: 100%; text-align: center; padding: 5px; padding-top: 22px;">
                                 <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
                                     <span class="badge 
-                                        {% if reuniao.status == 'aprovado' %} bg-success 
-                                        {% elif reuniao.status == 'rejeitado' %} bg-danger 
-                                        {% else %} bg-warning 
-                                        {% endif %}">
-                                        {% if reuniao.status == 'aprovado' %}
-                                            Aprovado
-                                        {% elif reuniao.status == 'rejeitado' %}
+                                    {% if reuniao.status == 'aprovado' %}
+                                        bg-success
+                                    {% elif reuniao.status == 'rejeitado' %}
+                                        bg-danger
+                                    {% elif reuniao.status == 'cancelado' %}
+                                        bg-secondary
+                                    {% elif reuniao.status == 'cancelamento_solicitado' %}
+                                        bg-warning
+                                    {% else %}
+                                        bg-warning
+                                    {% endif %}">
+                                    
+                                    {% if reuniao.status == 'aprovado' %}
+                                        Aprovado
+                                    {% elif reuniao.status == 'rejeitado' %}
                                         Negado
-                                            {% else %}
+                                    {% elif reuniao.status == 'cancelado' %}
+                                        Cancelado
+                                    {% elif reuniao.status == 'cancelamento_solicitado' %}
+                                        Cancelamento Solicitado
+                                    {% else %}
                                         Pendente
-                                        {% endif %}
+                                    {% endif %}
                                     </span>
                             
                                     {% if reuniao.status == 'rejeitado' %}
@@ -77,6 +90,7 @@
                                         </button>
                                     {% endif %}
                                 </div>
+
                             </td>
                             {% if user.is_staff %}
                                 <td>
@@ -84,6 +98,13 @@
                                     <a href="{% url 'rejeitar_reuniao' reuniao.id %}" class="btn btn-danger btn-sm">Rejeitar</a>
                                 </td>
                             {% endif %}
+                            <td>
+                                {% if reuniao.status == 'pendente' or reuniao.status == 'aprovado' %}
+                                <a href="{% url 'solicitar_cancelamento_reuniao' reuniao.id %}" class="btn btn-danger btn-sm">
+                                    Cancelar
+                                </a>
+                            {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -102,6 +123,16 @@
                 <button type="button" class="btn btn-secondary" onclick="fecharModal('modalMotivo')">Fechar</button>
             </div>
         </div>
+
+        {% if reuniao.status == 'aprovado' and user == reuniao.criado_por %}
+            <form method="post" action="{% url 'solicitar_cancelamento' reuniao.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-warning btn-sm">Solicitar Cancelamento</button>
+            </form>
+        {% elif reuniao.status == 'cancelamento_solicitado' %}
+            <span class="badge bg-secondary">Cancelamento Solicitado</span>
+        {% endif %}
+        
         <script src="{% static 'agenda/js/animacao.js' %}"></script>
         <script src="{% static 'agenda/js/moldais.js' %}"></script>
 
