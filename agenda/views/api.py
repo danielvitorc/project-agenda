@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
 import json
+from datetime import time, datetime
 from ..models import Reuniao, Usuario
 
 # View que pega o registro dos pedidos do banco para o JSON
@@ -27,9 +28,10 @@ def colaboradores_disponiveis(request):
     horario_fim = request.GET.get("horario_fim")
 
     if data_inicio and horario_inicio and horario_fim:
-        colaboradores_ocupados = Reuniao.objects.filter(
-            data_inicio=data_inicio,
-            status__in=['pendente', 'aprovado']
+        colaboradores_ocupados = Reuniao.objects.exclude(
+            status='cancelado'
+        ).filter(
+            data_inicio=data_inicio
         ).filter(
             Q(horario_inicio__lt=horario_fim) & Q(horario_fim__gt=horario_inicio)
         ).values_list('colaboradores', flat=True)
@@ -60,6 +62,7 @@ def eventos_json(request):
 
 # View que nao permite marcar uma reunião para o mesmo local, no mesmo dia e intervalo de horario para uma ja cadastrada
 
+
 @csrf_exempt
 def verificar_conflito(request):
     if request.method == "POST":
@@ -68,6 +71,15 @@ def verificar_conflito(request):
         data_inicio = data.get("data_inicio")
         horario_inicio = data.get("horario_inicio")
         horario_fim = data.get("horario_fim")
+
+        # Verificação prévia de campos obrigatórios
+        if not all([local, data_inicio, horario_inicio, horario_fim]):
+            return JsonResponse({"error": "Campos obrigatórios ausentes."}, status=400)
+        try:
+            horario_inicio = time.fromisoformat(horario_inicio)
+            horario_fim = time.fromisoformat(horario_fim)
+        except ValueError:
+            return JsonResponse({"error": "Formato de horário inválido."}, status=400)
 
         conflito = Reuniao.objects.filter(
             local_id=local,

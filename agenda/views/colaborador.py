@@ -20,18 +20,24 @@ def home(request):
     #Carrega e salva formulário para Solicitar Reunião
     if request.method == 'POST':
         form = ReuniaoForm(request.POST)
+        print("Erros no form:", form.errors)  # <-- Adicione isso
         if form.is_valid():
+            print(form.cleaned_data)
             reuniao = form.save(commit=False) 
             # Formulário salvo no nome daquele que solicitou (usuario)
             reuniao.criado_por = request.user 
             ''' Campo 'status' é salvo no banco por padrão como 'pendente' pois ainda não 
             foi autorizado'''
             reuniao.status = 'pendente' 
-            reuniao.save()
+            try:
+                reuniao.save()
+            except Exception as e:
+                print("Erro ao salvar reunião:", e)
+                messages.error(request, f"Erro ao salvar reunião: {e}")
+                
             # Retorna colaboradores a partir da logica do forms
             reuniao.colaboradores.set(form.cleaned_data['colaboradores'])
             reuniao.colaboradores.add(request.user)
-
             User = get_user_model()
             lideres = User.objects.filter(role='lider')
 
@@ -53,6 +59,8 @@ def home(request):
             return redirect('home')
     else:
         form = ReuniaoForm(user=request.user)
+        
+        
 
     return render(request, "agenda/home.html", {"form": form, "reunioes": reunioes})
 

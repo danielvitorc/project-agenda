@@ -48,38 +48,54 @@
                 <td>{{ reuniao.horario_inicio|time:"H:i" }} - {{ reuniao.horario_fim|time:"H:i" }}</td>
                 <td>{{ reuniao.criado_por.nome }}</td>
                 <td>
-                    <!-- Botão Aprovar -->
-                    <form action="{% url 'alterar_status_reuniao' reuniao.id 'aprovado' %}" method="post" style="display:inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-success btn-sm">✅ Aprovar</button>
-                    </form>
-    
-                    <!-- Botão para abrir o modal de rejeição -->
-                    <button 
-                        class="btn btn-danger btn-sm" 
-                        data-reuniao-id="{{ reuniao.id }}" 
-                        data-url="{% url 'alterar_status_reuniao' 0 'rejeitado' %}" 
-                        onclick="abrirModal(this)">
-                        ❌Rejeitar
-                    </button>
-    
-                    <!-- Botão para exibir detalhes -->
-                    <button class="btn btn-info btn-sm" 
-                        data-local="{{ reuniao.local.nome|escapejs }}"
-                        data-data="{{ reuniao.data_inicio|date:'d-m-Y' }}"
-                        data-horario="{{ reuniao.horario_inicio|time:'H:i' }} - {{ reuniao.horario_fim|time:'H:i' }}"
-                        data-descricao="{{ reuniao.descricao|escapejs }}"
-                        data-colaboradores="{{ reuniao.colaboradores.all|join:', '|escapejs }}"
-                        onclick="abrirModalDetalhes(this)">
-                        📋 Detalhes
-                    </button>
-                    {% if reuniao.status == 'cancelamento_solicitado' %}
-                        <form action="{% url 'alterar_status_reuniao' reuniao.id 'cancelado' %}" method="post" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-warning btn-sm mt-1">✔️ Aprovar Cancelamento</button>
-                        </form>
-                    {% endif %}
+                    <div class="d-flex flex-column gap-1">
+                        {% if reuniao.status == 'cancelamento_solicitado' %}
+                            <!-- Botão Detalhes -->
+                            <button class="btn btn-info btn-sm" 
+                                data-local="{{ reuniao.local.nome|escapejs }}"
+                                data-data="{{ reuniao.data_inicio|date:'d-m-Y' }}"
+                                data-horario="{{ reuniao.horario_inicio|time:'H:i' }} - {{ reuniao.horario_fim|time:'H:i' }}"
+                                data-descricao="{{ reuniao.descricao|escapejs }}"
+                                data-colaboradores="{{ reuniao.colaboradores.all|join:', '|escapejs }}"
+                                onclick="abrirModalDetalhes(this)">
+                                📋 Detalhes
+                            </button>
+
+                            <!-- Botão Aprovar Cancelamento -->
+                            <form action="{% url 'alterar_status_reuniao' reuniao.id 'cancelado' %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-warning btn-sm">✔️ Aprovar Cancelamento</button>
+                            </form>
+                        {% else %}
+                            <!-- Botão Aprovar -->
+                            <form action="{% url 'alterar_status_reuniao' reuniao.id 'aprovado' %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success btn-sm">✅ Aprovar</button>
+                            </form>
+
+                            <!-- Botão Rejeitar -->
+                            <button 
+                                class="btn btn-danger btn-sm" 
+                                data-reuniao-id="{{ reuniao.id }}" 
+                                data-url="{% url 'alterar_status_reuniao' 0 'rejeitado' %}" 
+                                onclick="abrirModal(this)">
+                                ❌ Rejeitar
+                            </button>
+
+                            <!-- Botão Detalhes -->
+                            <button class="btn btn-info btn-sm" 
+                                data-local="{{ reuniao.local.nome|escapejs }}"
+                                data-data="{{ reuniao.data_inicio|date:'d-m-Y' }}"
+                                data-horario="{{ reuniao.horario_inicio|time:'H:i' }} - {{ reuniao.horario_fim|time:'H:i' }}"
+                                data-descricao="{{ reuniao.descricao|escapejs }}"
+                                data-colaboradores="{{ reuniao.colaboradores.all|join:', '|escapejs }}"
+                                onclick="abrirModalDetalhes(this)">
+                                📋 Detalhes
+                            </button>
+                        {% endif %}
+                    </div>
                 </td>
+
             </tr>
             {% empty %}
             <tr>

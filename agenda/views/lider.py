@@ -41,7 +41,7 @@ def gerenciar_pedidos(request):
         return redirect('home')
 
     # Filtra Pedidos com o status 'pendente'
-    pedidos = Reuniao.objects.filter(status='pendente')
+    pedidos = Reuniao.objects.filter(status__in=['pendente', 'cancelamento_solicitado'])
 
     # Filtra o Histórico de Pedidos, excluindo os com status 'pendente'
     historico = Reuniao.objects.exclude(status='pendente').order_by('-data_inicio', '-horario_inicio')
@@ -100,4 +100,4 @@ def aprovar_cancelamento(request, reuniao_id):
         reuniao.status = 'cancelado'
         reuniao.save()
         messages.success(request, 'Reunião cancelada com sucesso.')
-    return redirect('page_pedidos')
+    return redirect('gerenciar_pedidos')

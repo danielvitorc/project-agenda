@@ -36,16 +36,23 @@ class ReuniaoForm(forms.ModelForm):
         horario_inicio = cleaned_data.get("horario_inicio")
         horario_fim = cleaned_data.get("horario_fim")
 
-        if local and data_inicio and horario_inicio and horario_fim and Reuniao.objects.exists():
+        if local and data_inicio and horario_inicio and horario_fim:
+            # Filtra as reuniões com status 'pendente' ou 'aprovado'
             conflito = Reuniao.objects.filter(
                 local=local,
-                data_inicio=data_inicio
+                data_inicio=data_inicio,
+                status__in=["pendente", "aprovado"]
+            ).exclude(
+                pk=self.instance.pk  # Exclui a própria reunião do filtro, se ela já existir
             ).filter(
                 Q(horario_inicio__lt=horario_fim) & Q(horario_fim__gt=horario_inicio)
             ).exists()
+
             if conflito:
                 raise forms.ValidationError("Já existe uma reunião agendada para esse local nesse intervalo de tempo.")
+        
         return cleaned_data
+
 
     def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
