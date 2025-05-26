@@ -133,6 +133,13 @@
                     {% else %}
                         <span class="badge bg-secondary">🔄 Pendente</span>
                     {% endif %}
+                    <!-- Botão Aprovar Cancelamento -->
+                    {% if reuniao.status == 'aprovado' %}
+                        <form action="{% url 'alterar_status_reuniao' reuniao.id 'cancelado' %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-warning btn-sm">❌ Cancelar</button>
+                        </form>
+                    {% endif %}
                 </td>
                 <td>
                     <button class="btn btn-info btn-sm" 
